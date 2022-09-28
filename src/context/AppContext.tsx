@@ -2,14 +2,14 @@ import React, { createContext, ReactElement, ReactNode, useEffect, useState } fr
 import { JokeProps, Query } from "../../types";
 import { base } from "../utils/api";
 
-const deafultJoke = {
+export const deafultJoke = {
   icon_url: "",
   id: "",
   url: "",
   value: "",
 };
 
-const defaultQuery = {
+export const defaultQuery = {
   result: [{ ...deafultJoke }],
   total: 0,
 };
@@ -28,6 +28,7 @@ export const AppContext = createContext({
   query: defaultQuery,
   setQuery: (result: Query) => {},
   error: "",
+  reset: () => {},
 });
 
 type Props = {
@@ -70,12 +71,11 @@ const AppContextProvider = ({ children }: Props) => {
         setLoading(false);
         if (res.error) {
           const err = res.message.split(":")[1].trim();
-          console.log("error: ", err.charAt(0));
           setError(err.charAt(0).toLocaleUpperCase() + err.slice(1));
+          setQuery({ ...defaultQuery });
         } else {
           setQuery(res);
           setError("");
-          console.log("query: ", res);
         }
       })
       .catch((err) => {
@@ -84,11 +84,17 @@ const AppContextProvider = ({ children }: Props) => {
       });
   };
 
+  const reset = () => {
+    setError("");
+    setQuery({ ...defaultQuery });
+    setSearchValue("");
+  };
+
   useEffect(() => {
     if (searchValue) {
       queryJoke();
     } else {
-      setError("");
+      reset();
     }
   }, [searchValue]);
 
@@ -115,6 +121,7 @@ const AppContextProvider = ({ children }: Props) => {
         query,
         setQuery,
         error,
+        reset,
       }}
     >
       {children}

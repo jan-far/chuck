@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { Button, Keyboard, StyleSheet, Text, TextInput, View } from "react-native";
-import { AppContext } from "../context/AppContext";
+import { AppContext, defaultQuery } from "../context/AppContext";
 import { Ionicons } from "@expo/vector-icons";
 
 const Search = () => {
-  const { searching, error, query, setSearching, searchValue, setSearchValue } =
+  const { searching, error, query, loading, reset, setSearching, searchValue, setSearchValue } =
     useContext(AppContext);
 
   return (
@@ -43,14 +43,14 @@ const Search = () => {
               title="Cancel"
               onPress={() => {
                 Keyboard.dismiss();
-                setSearching(false);
+                reset();
               }}
             />
           </View>
         )}
       </View>
       {error && <Text style={styles.error}>{error}</Text>}
-      {searchValue && query.result.length >= 1 && <Text>Total: {query.total}</Text>}
+      {!loading && !error && searchValue && <Text>Total: {query.total}</Text>}
     </View>
   );
 };
